@@ -5,9 +5,22 @@ jobs:
   test:
     working_directory: /go/src/github.com/nht1206/pricetracker
     docker:
-      - image: golang:1.16.3
+      - image: circleci/golang:1.16.3
+      - image: circleci/mysql:latest
+        environment:
+          MYSQL_DATABASE: test_db
     steps:
       - checkout
+      - run:
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 20`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
       - restore_cache:
           key: go-mod-{{ checksum "go.sum" }}
       - run:
