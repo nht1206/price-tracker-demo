@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pricetracker
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 15
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pricetracker
+              image: nht1206/pricetracker:7b2d966620bb6541f3b47dbdd5b866f9cd660ddc
+              imagePullPolicy: IfNotPresent
+              command:
+                - pricetracker
+              envFrom:
+                - secretRef:
+                    name: pricetracker-secret
+                - configMapRef:
+                    name: pricetracker-config
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /data/logs
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "500m"
+                limits:
+                  memory: "128Mi"
+                  cpu: "500m"
+          imagePullSecrets:
+            - name: regcred
+          volumes:
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: datalog-pvc

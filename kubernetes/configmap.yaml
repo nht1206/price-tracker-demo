@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pricetracker-config
+data:
+  APP_NAME: "pricetracker"
+  NUM_CRAWLING_GOROUTINES: "10"
+  NUM_NOTIFYING_GOROUTINES: "1"
+  LOG_OUTPUT_PATH: "/data/logs"
+  LOG_FILE_NAME: "pricetracker.log"
+  LOG_LEVEL: "info"
