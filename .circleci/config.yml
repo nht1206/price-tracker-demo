@@ -68,11 +68,7 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - test:
-          filters:
-            branches:
-              ignore:
-                - master
+      - test
       - build:
           requires:
             - test
