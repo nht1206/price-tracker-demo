@@ -68,7 +68,11 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              ignore:
+                - /release-.*/
       - build:
           requires:
             - test
@@ -76,6 +80,4 @@ workflows:
           filters:
             branches:
               ignore:
-                - /feature\/.*/
-                - /release-.*/
-      
+                - /feature\/.*/      
