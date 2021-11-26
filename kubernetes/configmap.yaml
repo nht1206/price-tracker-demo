@@ -9,3 +9,5 @@ data:
   LOG_OUTPUT_PATH: "/data/logs"
   LOG_FILE_NAME: "pricetracker.log"
   LOG_LEVEL: "info"
+  NOTIFIER_MAIL_SMTP_HOST: "smtp.gmail.com"
+  NOTIFIER_MAIL_SMTP_PORT: "587"

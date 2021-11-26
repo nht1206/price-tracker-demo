@@ -6,11 +6,13 @@ import (
 	"github.com/nht1206/pricetracker/config"
 	"github.com/nht1206/pricetracker/db"
 	"github.com/nht1206/pricetracker/internal/repository"
+	"github.com/nht1206/pricetracker/internal/service/notifier"
 )
 
 type Context struct {
-	Config      *config.Config
-	ProductRepo repository.ProductRepository
+	Config          *config.Config
+	Dao             repository.DAO
+	NotifierFactory notifier.NotifierFactory
 }
 
 func InitSystemContext(cfg *config.Config) (*Context, error) {
@@ -23,12 +25,19 @@ func InitSystemContext(cfg *config.Config) (*Context, error) {
 		return nil, fmt.Errorf("failed to initialize database. %v", err)
 	}
 
-	productRepo, err := repository.NewProductRepository(db)
+	dao, err := repository.NewDAO(db)
 	if err != nil {
 		return nil, err
 	}
+
+	notifierFactory, err := notifier.NewNotifierFactory(cfg.Notifier)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Context{
-		Config:      cfg,
-		ProductRepo: productRepo,
+		Config:          cfg,
+		Dao:             dao,
+		NotifierFactory: notifierFactory,
 	}, nil
 }

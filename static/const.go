@@ -24,3 +24,15 @@ const (
 	NO_TARGET            = 0
 	MINIMUM_ROW_AFFECTED = 1
 )
+
+const (
+	MAIL_TEMPLATE_PATH = "/template/mail_%s.tpl"
+	DEFAULT_LANGAGE    = "en"
+)
+
+const (
+	MALE_TITLE          = "Mr/Mrs"
+	FEMALE_TITLE        = "Ms/Mrs"
+	MAIL_HEADER         = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	SUBJECT_PLACEHOLDER = "Subject: %s \n%s\n\n"
+)

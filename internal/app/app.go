@@ -17,7 +17,7 @@ func StartApp(sysCtx *system.Context) {
 	logger.Logger.
 		With(fields...).Info("App starts")
 
-	targetTrackingProducts, err := sysCtx.ProductRepo.FindTargetTrackingProduct()
+	targetTrackingProducts, err := sysCtx.Dao.FindTargetTrackingProduct()
 	if err != nil {
 		logger.Logger.
 			With(fields...).Errorf("Failed at FindTargetTrackingProduct. err: %v", err)
@@ -30,10 +30,10 @@ func StartApp(sysCtx *system.Context) {
 	} else {
 		ctx, cancel := context.WithCancel(context.Background())
 
-		notifyingFuture := service.NewNotifyWorker(sysCtx.Config).
+		notifyingFuture := service.NewNotifyWorker(sysCtx.Config, sysCtx.Dao, sysCtx.NotifierFactory).
 			StartNotifying(ctx, cancel)
 
-		priceCrawlingFuture := service.NewPriceTracker(sysCtx.Config, sysCtx.ProductRepo).
+		priceCrawlingFuture := service.NewPriceTracker(sysCtx.Config, sysCtx.Dao).
 			StartTracking(ctx, cancel, targetTrackingProducts, notifyingFuture.Sink())
 
 		err = priceCrawlingFuture.Wait()
