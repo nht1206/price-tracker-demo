@@ -6,16 +6,20 @@ import (
 	"github.com/nht1206/pricetracker/config"
 	"github.com/nht1206/pricetracker/internal/logger"
 	"github.com/nht1206/pricetracker/internal/model"
+	"github.com/nht1206/pricetracker/internal/repository"
+	"github.com/nht1206/pricetracker/internal/service/notifier"
 	"golang.org/x/sync/errgroup"
 )
 
 type notifyWorker struct {
 	config *config.Config
+	dao    repository.DAO
 }
 
-func NewNotifyWorker(config *config.Config) *notifyWorker {
+func NewNotifyWorker(config *config.Config, dao repository.DAO) *notifyWorker {
 	return &notifyWorker{
 		config: config,
+		dao:    dao,
 	}
 }
 
@@ -52,9 +56,28 @@ func (w *notifyWorker) StartNotifying(ctx context.Context, cancel context.Cancel
 					if !ok {
 						return nil
 					}
-					logger.Logger.
-						With(fields...).
-						Infof("Success to inform the new price to user. productId: %v, oldPrice: %v, newPrice: %v", v.ProductId, v.OldPrice, v.NewPrice)
+
+					users, err := w.dao.GetAllUserFollowed(v.ProductId)
+					if err != nil {
+						return err
+					}
+
+					for _, u := range users {
+						err := w.notify(&u, &v)
+						if err != nil {
+							return err
+						}
+					}
+
+					if err != nil {
+						logger.Logger.
+							With(fields...).
+							Errorf("Failed at w.notify. err: %v", err)
+					} else {
+						logger.Logger.
+							With(fields...).
+							Infof("Success to inform the new price to user. productId: %v, oldPrice: %v, newPrice: %v", v.ProductId, v.OldPrice, v.NewPrice)
+					}
 				}
 			}
 		})
@@ -72,4 +95,23 @@ func (w *notifyWorker) StartNotifying(ctx context.Context, cancel context.Cancel
 	}
 
 	return future
+}
+
+func (w *notifyWorker) notify(user *model.User, result *model.TrackingResult) error {
+	b, err := notifier.NewNotifierFactory(w.config.Notifier)
+	if err != nil {
+		return err
+	}
+
+	n, err := b.CreateNotifier(user.FollowType)
+	if err != nil {
+		return err
+	}
+
+	err = n.Notify(user, result)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

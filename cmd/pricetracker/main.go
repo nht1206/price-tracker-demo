@@ -18,12 +18,29 @@ func main() {
 			os.Exit(exitCode)
 		}
 	}()
-	cfg, err := config.NewConfig()
-	if err != nil {
-		log.Fatal(err)
+	cfg := &config.Config{
+		AppName:                "Test",
+		NumCrawlingGoroutines:  5,
+		NumNotifyingGoroutines: 1,
+		Log: &config.LogConfig{
+			OutputPath: "./data/logs",
+			FileName:   "test.log",
+			Level:      "info",
+		},
+		DB: &config.DatabaseConfig{
+			DSN: "root:toor@tcp(localhost:3306)/pricesubscriber",
+		},
+		Notifier: &config.NotifierConfig{
+			Mail: &config.MailConfig{
+				SMTPHost:       "smtp.gmail.com",
+				SMTPPort:       "587",
+				Sender:         "hp1t1nhy3u@gmail.com",
+				SenderPassword: "01653374206",
+			},
+		},
 	}
 
-	err = logger.InitLogger(cfg.Log)
+	err := logger.InitLogger(cfg.Log)
 	if err != nil {
 		exitCode = static.APPLICATION_STATUS_LOGGER_INIT_ERROR
 		log.Printf("-----InitLogger-----\n err:%v", err)
