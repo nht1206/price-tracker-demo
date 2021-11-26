@@ -13,7 +13,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: pricetracker
-              image: nht1206/pricetracker:7b2d966620bb6541f3b47dbdd5b866f9cd660ddc
+              image: nht1206/pricetracker:4f429018fdedad7eb398c8f820d406aead64ba2e
               imagePullPolicy: IfNotPresent
               command:
                 - pricetracker
