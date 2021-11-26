@@ -9,8 +9,8 @@ import (
 )
 
 type Context struct {
-	Config      *config.Config
-	ProductRepo repository.ProductRepository
+	Config *config.Config
+	Dao    repository.DAO
 }
 
 func InitSystemContext(cfg *config.Config) (*Context, error) {
@@ -23,12 +23,12 @@ func InitSystemContext(cfg *config.Config) (*Context, error) {
 		return nil, fmt.Errorf("failed to initialize database. %v", err)
 	}
 
-	productRepo, err := repository.NewProductRepository(db)
+	dao, err := repository.NewDAO(db)
 	if err != nil {
 		return nil, err
 	}
 	return &Context{
-		Config:      cfg,
-		ProductRepo: productRepo,
+		Config: cfg,
+		Dao:    dao,
 	}, nil
 }

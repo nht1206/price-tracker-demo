@@ -16,15 +16,15 @@ import (
 )
 
 type priceTracker struct {
-	config      *config.Config
-	productRepo repository.ProductRepository
+	config *config.Config
+	dao    repository.DAO
 }
 
 func NewPriceTracker(config *config.Config,
-	productRepo repository.ProductRepository) *priceTracker {
+	dao repository.DAO) *priceTracker {
 	return &priceTracker{
-		config:      config,
-		productRepo: productRepo,
+		config: config,
+		dao:    dao,
 	}
 }
 
@@ -69,7 +69,7 @@ func (w *priceTracker) StartTracking(ctx context.Context, cancel context.CancelF
 					if err != nil {
 						return err
 					}
-					newPrice, err := strconv.ParseInt(result.OldPrice, 10, 64)
+					newPrice, err := strconv.ParseInt(result.NewPrice, 10, 64)
 					if err != nil {
 						return err
 					}
@@ -127,16 +127,16 @@ func (w *priceTracker) StartTracking(ctx context.Context, cancel context.CancelF
 
 func (w *priceTracker) trackPrice(product model.Product) (*model.TrackingResult, error) {
 	successFlg := false
-	rowAffected, err := w.productRepo.LockProductToTrackPrice(product.ID)
+	rowAffected, err := w.dao.LockProductToTrackPrice(product.ID)
 	if err != nil || rowAffected != static.MINIMUM_ROW_AFFECTED {
 		return nil, fmt.Errorf("can not lock the product. productId: %v, err: %v, rowAffected: %v", product.ID, err, rowAffected)
 	}
 	defer func() {
 		if !successFlg {
-			w.productRepo.UpdateProductStatusToFailed(product.ID)
+			w.dao.UpdateProductStatusToFailed(product.ID)
 		}
 	}()
-	oldPrice, err := w.productRepo.GetProductPrice(product.ID)
+	oldPrice, err := w.dao.GetProductPrice(product.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -153,13 +153,13 @@ func (w *priceTracker) trackPrice(product model.Product) (*model.TrackingResult,
 	}
 
 	if newPrice != oldPrice.Price {
-		rowAffected, err = w.productRepo.UpdateProductPrice(product.ID, newPrice)
+		rowAffected, err = w.dao.UpdateProductPrice(product.ID, newPrice)
 		if err != nil || rowAffected != static.MINIMUM_ROW_AFFECTED {
 			return nil, fmt.Errorf("can not update price for the product. productId: %v, err: %v, rowAffected: %v", product.ID, err, rowAffected)
 		}
 	}
 
-	rowAffected, err = w.productRepo.UnlockProduct(product.ID)
+	rowAffected, err = w.dao.UnlockProduct(product.ID)
 	if err != nil || rowAffected != static.MINIMUM_ROW_AFFECTED {
 		return nil, fmt.Errorf("can not unlock the product. productId: %v, err: %v, rowAffected: %v", product.ID, err, rowAffected)
 	}
@@ -167,7 +167,9 @@ func (w *priceTracker) trackPrice(product model.Product) (*model.TrackingResult,
 	successFlg = true
 
 	return &model.TrackingResult{
+		Name:      product.Name,
 		ProductId: product.ID,
+		URL:       product.URL,
 		OldPrice:  oldPrice.Price,
 		NewPrice:  newPrice,
 	}, nil
