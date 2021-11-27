@@ -38,7 +38,7 @@ func TestBuild(t *testing.T) {
 	mailContentBuilder := NewMailContentBuilder()
 
 	_, err := mailContentBuilder.
-		SetTemplatePath("../template/mail.tpl").
+		SetTemplatePath("../template/mail_en.tpl").
 		SetUser(user).
 		SetTrackingResult(result).
 		Build()
@@ -77,7 +77,7 @@ func TestNGBuild(t *testing.T) {
 
 	t.Run("Case 2: user is nil", func(t *testing.T) {
 		_, err := mailContentBuilder.
-			SetTemplatePath("dummy").
+			SetTemplatePath("../template/mail_en.tpl").
 			SetUser(nil).
 			SetTrackingResult(result).
 			Build()
@@ -88,7 +88,7 @@ func TestNGBuild(t *testing.T) {
 
 	t.Run("Case 2: tracking result is nil", func(t *testing.T) {
 		_, err := mailContentBuilder.
-			SetTemplatePath("dummy").
+			SetTemplatePath("../template/mail_en.tpl").
 			SetUser(user).
 			SetTrackingResult(nil).
 			Build()
