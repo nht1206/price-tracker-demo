@@ -6,6 +6,7 @@ type User struct {
 	Email      string
 	Gender     bool
 	FollowType uint
+	Lang       string
 }
 
 func (u User) TableName() string {

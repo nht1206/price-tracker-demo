@@ -90,7 +90,7 @@ func (d *dao) getAllUserFollowed(productId uint64) ([]model.User, error) {
 
 	findSQL := `
 		SELECT 
-			A.id, full_name, email, gender, follow_type
+			A.id, full_name, email, gender, follow_type, lang
 		FROM t_user as A
 		JOIN t_follow as B
 		ON A.id = B.user_id AND B.delete_flg = ?

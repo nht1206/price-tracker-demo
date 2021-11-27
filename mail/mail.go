@@ -64,15 +64,7 @@ func (b *mailContentBuilder) Build() (*bytes.Buffer, error) {
 		return nil, err
 	}
 
-	body.Write([]byte(createSubject(fmt.Sprintf("PriceTracker notification: %s", b.trackingResult.Name))))
-
-	title := ""
-
-	if b.user.Gender {
-		title = static.MALE_TITLE
-	} else {
-		title = static.FEMALE_TITLE
-	}
+	body.Write([]byte(createSubject(b.user.Lang)))
 
 	err = t.Execute(&body, struct {
 		Name        string
@@ -83,7 +75,7 @@ func (b *mailContentBuilder) Build() (*bytes.Buffer, error) {
 		NewPrice    string
 	}{
 		Name:        b.user.FullName,
-		Title:       title,
+		Title:       getUserTitle(b.user.Gender, b.user.Lang),
 		ProductName: b.trackingResult.Name,
 		URL:         b.trackingResult.URL,
 		OldPrice:    b.trackingResult.OldPrice,
@@ -96,6 +88,32 @@ func (b *mailContentBuilder) Build() (*bytes.Buffer, error) {
 	return &body, nil
 }
 
-func createSubject(subject string) string {
-	return fmt.Sprintf(static.SUBJECT_PLACEHOLDER, subject, static.MAIL_HEADER)
+func createSubject(lang string) string {
+	switch lang {
+	case "en":
+		return fmt.Sprintf(static.SUBJECT_PLACEHOLDER, static.SUBJECT_EN, static.MAIL_HEADER)
+	default:
+		return fmt.Sprintf(static.SUBJECT_PLACEHOLDER, static.SUBJECT_VI, static.MAIL_HEADER)
+	}
+}
+
+func getUserTitle(gender bool, lang string) string {
+	title := ""
+
+	switch lang {
+	case "en":
+		if gender {
+			title = static.MALE_TITLE_EN
+		} else {
+			title = static.FEMALE_TITLE_EN
+		}
+		return title
+	default:
+		if gender {
+			title = static.MALE_TITLE_VI
+		} else {
+			title = static.FEMALE_TITLE_VI
+		}
+		return title
+	}
 }
