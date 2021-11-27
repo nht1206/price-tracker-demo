@@ -26,12 +26,17 @@ const (
 )
 
 const (
-	MAIL_TEMPLATE_PATH = "template/mail.tpl"
+	MAIL_TEMPLATE_PATH = "template/mail_%s.tpl"
+	DEFAULT_LANGAGE    = "vi"
 )
 
 const (
-	MALE_TITLE          = "Mr/Mrs"
-	FEMALE_TITLE        = "Ms/Mrs"
+	MALE_TITLE_EN       = "Mr/Mrs"
+	FEMALE_TITLE_EN     = "Ms/Mrs"
+	MALE_TITLE_VI       = "Ông"
+	FEMALE_TITLE_VI     = "Bà"
 	MAIL_HEADER         = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	SUBJECT_PLACEHOLDER = "Subject: %s \n%s\n\n"
+	SUBJECT_EN          = "PriceTracker notification"
+	SUBJECT_VI          = "PriceTracker thông báo"
 )

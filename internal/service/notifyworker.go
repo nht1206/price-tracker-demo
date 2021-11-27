@@ -12,14 +12,16 @@ import (
 )
 
 type notifyWorker struct {
-	config *config.Config
-	dao    repository.DAO
+	config          *config.Config
+	dao             repository.DAO
+	notifierFactory notifier.NotifierFactory
 }
 
-func NewNotifyWorker(config *config.Config, dao repository.DAO) *notifyWorker {
+func NewNotifyWorker(config *config.Config, dao repository.DAO, notifierFactory notifier.NotifierFactory) *notifyWorker {
 	return &notifyWorker{
-		config: config,
-		dao:    dao,
+		config:          config,
+		dao:             dao,
+		notifierFactory: notifierFactory,
 	}
 }
 
@@ -98,12 +100,7 @@ func (w *notifyWorker) StartNotifying(ctx context.Context, cancel context.Cancel
 }
 
 func (w *notifyWorker) notify(user *model.User, result *model.TrackingResult) error {
-	b, err := notifier.NewNotifierFactory(w.config.Notifier)
-	if err != nil {
-		return err
-	}
-
-	n, err := b.CreateNotifier(user.FollowType)
+	n, err := w.notifierFactory.CreateNotifier(user.FollowType)
 	if err != nil {
 		return err
 	}
