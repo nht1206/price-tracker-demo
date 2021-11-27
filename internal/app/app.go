@@ -30,7 +30,7 @@ func StartApp(sysCtx *system.Context) {
 	} else {
 		ctx, cancel := context.WithCancel(context.Background())
 
-		notifyingFuture := service.NewNotifyWorker(sysCtx.Config, sysCtx.Dao).
+		notifyingFuture := service.NewNotifyWorker(sysCtx.Config, sysCtx.Dao, sysCtx.NotifierFactory).
 			StartNotifying(ctx, cancel)
 
 		priceCrawlingFuture := service.NewPriceTracker(sysCtx.Config, sysCtx.Dao).

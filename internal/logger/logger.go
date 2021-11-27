@@ -21,8 +21,10 @@ func InitLogger(cfg *config.LogConfig) error {
 		return err
 	}
 	config.Level.SetLevel(level)
-	config.OutputPaths = []string{
-		path.Join(cfg.OutputPath, cfg.FileName),
+	if cfg.OutputPath != "" {
+		config.OutputPaths = []string{
+			path.Join(cfg.OutputPath, cfg.FileName),
+		}
 	}
 	config.DisableStacktrace = true
 	config.EncoderConfig.TimeKey = "timestamp"

@@ -5,8 +5,8 @@ import (
 	"net/smtp"
 
 	"github.com/nht1206/pricetracker/config"
-	"github.com/nht1206/pricetracker/internal/mail"
 	"github.com/nht1206/pricetracker/internal/model"
+	"github.com/nht1206/pricetracker/mail"
 )
 
 type mailNotifier struct {
@@ -24,11 +24,14 @@ func newMailNotifier(cfg *config.MailConfig) (Notifier, error) {
 }
 
 func (n *mailNotifier) Notify(user *model.User, result *model.TrackingResult) error {
-	mailContentBuilder := mail.NewMailContentBuilder(user, result)
+	mailContentBuilder := mail.NewMailContentBuilder()
 
 	mailAuth := smtp.PlainAuth("", n.config.Sender, n.config.SenderPassword, n.config.SMTPHost)
 
-	mailBody, err := mailContentBuilder.Build()
+	mailBody, err := mailContentBuilder.
+		SetUser(user).
+		SetTrackingResult(result).
+		Build()
 	if err != nil {
 		return err
 	}

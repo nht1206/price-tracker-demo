@@ -26,7 +26,8 @@ const (
 )
 
 const (
-	MAIL_TEMPLATE_PATH = "template/mail.tpl"
+	MAIL_TEMPLATE_PATH = "/template/mail_%s.tpl"
+	DEFAULT_LANGAGE    = "en"
 )
 
 const (

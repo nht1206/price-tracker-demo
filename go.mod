@@ -3,6 +3,7 @@ module github.com/nht1206/pricetracker
 go 1.16
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/jinzhu/now v1.1.3 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
 	go.uber.org/atomic v1.9.0 // indirect

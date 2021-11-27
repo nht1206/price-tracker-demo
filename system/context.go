@@ -6,11 +6,13 @@ import (
 	"github.com/nht1206/pricetracker/config"
 	"github.com/nht1206/pricetracker/db"
 	"github.com/nht1206/pricetracker/internal/repository"
+	"github.com/nht1206/pricetracker/internal/service/notifier"
 )
 
 type Context struct {
-	Config *config.Config
-	Dao    repository.DAO
+	Config          *config.Config
+	Dao             repository.DAO
+	NotifierFactory notifier.NotifierFactory
 }
 
 func InitSystemContext(cfg *config.Config) (*Context, error) {
@@ -27,8 +29,15 @@ func InitSystemContext(cfg *config.Config) (*Context, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	notifierFactory, err := notifier.NewNotifierFactory(cfg.Notifier)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Context{
-		Config: cfg,
-		Dao:    dao,
+		Config:          cfg,
+		Dao:             dao,
+		NotifierFactory: notifierFactory,
 	}, nil
 }
