@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/nht1206/pricetracker/config"
-	"github.com/nht1206/pricetracker/internal/logger"
+	"github.com/nht1206/pricetracker/internal/log"
 	"github.com/nht1206/pricetracker/internal/model"
 	"github.com/nht1206/pricetracker/internal/repository"
 	"github.com/nht1206/pricetracker/internal/service/notifier"
@@ -39,7 +39,10 @@ func (f *notifyFuture) Wait() error {
 }
 
 func (w *notifyWorker) StartNotifying(ctx context.Context, cancel context.CancelFunc) *notifyFuture {
-	fields := []interface{}{"Func", "PriceTracker.StartNotifying"}
+	logger := log.FromContext(ctx)
+	logger = logger.With("Func", "PriceTracker.StartNotifying")
+	ctx = log.WithLogger(ctx, logger)
+
 	chTrackingResult := make(chan model.TrackingResult, w.config.NumNotifyingGoroutines)
 	notifyingEg, notifyingCtx := errgroup.WithContext(ctx)
 	for i := 0; i < w.config.NumNotifyingGoroutines; i++ {
@@ -72,13 +75,9 @@ func (w *notifyWorker) StartNotifying(ctx context.Context, cancel context.Cancel
 					}
 
 					if err != nil {
-						logger.Logger.
-							With(fields...).
-							Errorf("Failed at w.notify. err: %v", err)
+						logger.Errorf("Failed at w.notify. err: %v", err)
 					} else {
-						logger.Logger.
-							With(fields...).
-							Infof("Success to inform the new price to user. productId: %v, oldPrice: %v, newPrice: %v", v.ProductId, v.OldPrice, v.NewPrice)
+						logger.Infof("Success to inform the new price to user. productId: %v, oldPrice: %v, newPrice: %v", v.ProductId, v.OldPrice, v.NewPrice)
 					}
 				}
 			}

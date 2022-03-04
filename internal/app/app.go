@@ -3,32 +3,29 @@ package pricetracker
 import (
 	"context"
 
-	"github.com/nht1206/pricetracker/internal/logger"
+	"github.com/nht1206/pricetracker/internal/log"
 	"github.com/nht1206/pricetracker/internal/service"
 	"github.com/nht1206/pricetracker/static"
 	"github.com/nht1206/pricetracker/system"
 )
 
-func StartApp(sysCtx *system.Context) {
-	fields := []interface{}{
-		"App",
-		sysCtx.Config.AppName,
-	}
-	logger.Logger.
-		With(fields...).Info("App starts")
+func StartApp(ctx context.Context, sysCtx *system.Context) {
+	logger := log.FromContext(ctx)
+	logger = logger.With("app", sysCtx.Config.AppName)
+	ctx = log.WithLogger(ctx, logger)
+
+	logger.Info("App starts")
 
 	targetTrackingProducts, err := sysCtx.Dao.FindTargetTrackingProduct()
 	if err != nil {
-		logger.Logger.
-			With(fields...).Errorf("Failed at FindTargetTrackingProduct. err: %v", err)
+		logger.Errorf("Failed at FindTargetTrackingProduct. err: %v", err)
 		return
 	}
 
 	if len(targetTrackingProducts) == static.NO_TARGET {
-		logger.Logger.
-			With(fields...).Info("No target tracking products.")
+		logger.Info("No target tracking products.")
 	} else {
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx, cancel := context.WithCancel(ctx)
 
 		notifyingFuture := service.NewNotifyWorker(sysCtx.Config, sysCtx.Dao, sysCtx.NotifierFactory).
 			StartNotifying(ctx, cancel)
@@ -38,19 +35,16 @@ func StartApp(sysCtx *system.Context) {
 
 		err = priceCrawlingFuture.Wait()
 		if err != nil {
-			logger.Logger.
-				With(fields...).Errorf("Failed to crawl prices for the products. err: %v", err)
+			logger.Errorf("Failed to crawl prices for the products. err: %v", err)
 			return
 		}
 
 		err = notifyingFuture.Wait()
 		if err != nil {
-			logger.Logger.
-				With(fields...).Errorf("Failed to notify prices to users. err: %v", err)
+			logger.Errorf("Failed to notify prices to users. err: %v", err)
 			return
 		}
 	}
 
-	logger.Logger.
-		With(fields...).Info("App ends.")
+	logger.Info("App ends.")
 }

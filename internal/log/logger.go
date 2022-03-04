@@ -1,7 +1,7 @@
-package logger
+package log
 
 import (
-	"fmt"
+	"errors"
 	"path"
 
 	"github.com/nht1206/pricetracker/config"
@@ -9,16 +9,14 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Logger *zap.SugaredLogger
-
-func InitLogger(cfg *config.LogConfig) error {
+func InitLogger(cfg *config.LogConfig) (*zap.SugaredLogger, error) {
 	if cfg == nil {
-		return fmt.Errorf("cfg is nil")
+		return nil, errors.New("cfg is nil")
 	}
 	config := zap.NewProductionConfig()
 	level, err := getZapLevel(cfg.Level)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	config.Level.SetLevel(level)
 	if cfg.OutputPath != "" {
@@ -32,10 +30,9 @@ func InitLogger(cfg *config.LogConfig) error {
 
 	l, err := config.Build()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	Logger = l.Sugar()
-	return nil
+	return l.Sugar(), nil
 }
 
 func getZapLevel(level string) (zapcore.Level, error) {
@@ -55,6 +52,6 @@ func getZapLevel(level string) (zapcore.Level, error) {
 	case "fatal":
 		return zap.FatalLevel, nil
 	default:
-		return -2, fmt.Errorf("undefined log level")
+		return -2, errors.New("undefined log level")
 	}
 }

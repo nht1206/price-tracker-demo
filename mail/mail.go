@@ -2,6 +2,7 @@ package mail
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 
@@ -44,11 +45,11 @@ func (b *mailContentBuilder) SetTrackingResult(result *model.TrackingResult) Mai
 func (b *mailContentBuilder) Build() (*bytes.Buffer, error) {
 
 	if b.user == nil {
-		return nil, fmt.Errorf("user is nil")
+		return nil, errors.New("user is nil")
 	}
 
 	if b.trackingResult == nil {
-		return nil, fmt.Errorf("tracking download is nil")
+		return nil, errors.New("tracking download is nil")
 	}
 
 	var templatePath string

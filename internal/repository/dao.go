@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/nht1206/pricetracker/internal/model"
 	"github.com/nht1206/pricetracker/static"
@@ -24,7 +24,7 @@ type dao struct {
 
 func NewDAO(db *gorm.DB) (DAO, error) {
 	if db == nil {
-		return nil, fmt.Errorf("db is nil")
+		return nil, errors.New("db is nil")
 	}
 	return &dao{
 		db: db,

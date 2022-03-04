@@ -1,4 +1,4 @@
-package logger
+package log
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestInitLogger(t *testing.T) {
-	err := InitLogger(&config.LogConfig{
+	_, err := InitLogger(&config.LogConfig{
 		Level: "info",
 	})
 

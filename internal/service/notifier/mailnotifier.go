@@ -1,6 +1,7 @@
 package notifier
 
 import (
+	"errors"
 	"fmt"
 	"net/smtp"
 
@@ -15,7 +16,7 @@ type mailNotifier struct {
 
 func newMailNotifier(cfg *config.MailConfig) (Notifier, error) {
 	if cfg == nil {
-		return nil, fmt.Errorf("mail cfg is nil")
+		return nil, errors.New("mail cfg is nil")
 	}
 
 	return &mailNotifier{

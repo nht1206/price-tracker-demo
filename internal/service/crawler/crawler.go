@@ -1,6 +1,10 @@
 package crawler
 
-import "fmt"
+import "errors"
+
+var (
+	ErrCrawlerNotFound = errors.New("crawler not found")
+)
 
 type CrawlerType string
 
@@ -33,7 +37,7 @@ func GetCrawler(crawlerType CrawlerType) (Crawler, error) {
 		crawlers[Shopee] = shopeeCrawler
 		return shopeeCrawler, nil
 	default:
-		return nil, fmt.Errorf("crawler not found")
+		return nil, ErrCrawlerNotFound
 	}
 }
 

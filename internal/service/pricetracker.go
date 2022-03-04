@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/nht1206/pricetracker/config"
-	"github.com/nht1206/pricetracker/internal/logger"
+	"github.com/nht1206/pricetracker/internal/log"
 	"github.com/nht1206/pricetracker/internal/model"
 	"github.com/nht1206/pricetracker/internal/repository"
 	"github.com/nht1206/pricetracker/internal/service/crawler"
@@ -39,7 +39,10 @@ func (f *priceTrackerFuture) Wait() error {
 func (w *priceTracker) StartTracking(ctx context.Context, cancel context.CancelFunc,
 	products []model.Product, chNotify chan<- model.TrackingResult) *priceTrackerFuture {
 
-	fields := []interface{}{"Func", "PriceTracker.StartTracking"}
+	logger := log.FromContext(ctx)
+	logger = logger.With("Func", "PriceTracker.StartTracking")
+	ctx = log.WithLogger(ctx, logger)
+
 	chInputProduct := make(chan model.Product, w.config.NumCrawlingGoroutines)
 	crawlingEg, crawlingCtx := errgroup.WithContext(ctx)
 	for i := 0; i < w.config.NumCrawlingGoroutines; i++ {
@@ -62,9 +65,7 @@ func (w *priceTracker) StartTracking(ctx context.Context, cancel context.CancelF
 					if err != nil {
 						return err
 					}
-					logger.Logger.
-						With(fields...).
-						Infof("Success to track product price. productId: %v, oldPrice: %v, newPrice: %v", result.ProductId, result.OldPrice, result.NewPrice)
+					logger.Infof("Success to track product price. productId: %v, oldPrice: %v, newPrice: %v", result.ProductId, result.OldPrice, result.NewPrice)
 					oldPrice, err := strconv.ParseInt(result.OldPrice, 10, 64)
 					if err != nil {
 						return err

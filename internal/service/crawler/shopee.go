@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -45,7 +46,7 @@ func getPrice(shopId, productId string) (string, error) {
 	if tempPrice != "" && len(tempPrice) > 5 {
 		price = tempPrice[:len(tempPrice)-5]
 	} else {
-		return "", fmt.Errorf("can not get price of the shopee product")
+		return "", errors.New("can not get price of the shopee product")
 	}
 
 	return price, nil

@@ -1,11 +1,12 @@
 package pricetracker
 
 import (
+	"context"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/nht1206/pricetracker/config"
-	"github.com/nht1206/pricetracker/internal/logger"
+	"github.com/nht1206/pricetracker/internal/log"
 	"github.com/nht1206/pricetracker/internal/model"
 	"github.com/nht1206/pricetracker/internal/repository"
 	"github.com/nht1206/pricetracker/internal/service/notifier"
@@ -46,8 +47,10 @@ func TestStartApp(t *testing.T) {
 		},
 	}
 
-	logger.InitLogger(cfg.Log)
-
+	logger, err := log.InitLogger(cfg.Log)
+	if err != nil {
+		t.Error(err)
+	}
 	params := []struct {
 		newDao             func() *repository.MockDAO
 		newNotifierFactory func() *notifier.MockNotifierFactory
@@ -71,12 +74,13 @@ func TestStartApp(t *testing.T) {
 		dao := p.newDao()
 		notifierFactory := p.newNotifierFactory()
 
-		ctx := &system.Context{
+		sysCtx := &system.Context{
 			Config:          cfg,
 			Dao:             dao,
 			NotifierFactory: notifierFactory,
 		}
+		ctx := log.WithLogger(context.Background(), logger)
 
-		StartApp(ctx)
+		StartApp(ctx, sysCtx)
 	}
 }

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/nht1206/pricetracker/config"
@@ -17,7 +18,7 @@ type Context struct {
 
 func InitSystemContext(cfg *config.Config) (*Context, error) {
 	if cfg == nil {
-		return nil, fmt.Errorf("cfg is nil")
+		return nil, errors.New("cfg is nil")
 	}
 
 	db, err := db.InitDatabase(cfg.DB.DSN)
