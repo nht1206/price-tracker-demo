@@ -92,9 +92,9 @@ func (b *mailContentBuilder) Build() (*bytes.Buffer, error) {
 func createSubject(lang string) string {
 	switch lang {
 	case "en":
-		return fmt.Sprintf(static.SUBJECT_PLACEHOLDER, static.SUBJECT_EN, static.MAIL_HEADER)
+		return fmt.Sprintf(static.SubjectPlaceholder, static.SubjectEn, static.MailHeader)
 	default:
-		return fmt.Sprintf(static.SUBJECT_PLACEHOLDER, static.SUBJECT_VI, static.MAIL_HEADER)
+		return fmt.Sprintf(static.SubjectPlaceholder, static.SubjectVi, static.MailHeader)
 	}
 }
 
@@ -104,16 +104,16 @@ func getUserTitle(gender bool, lang string) string {
 	switch lang {
 	case "en":
 		if gender {
-			title = static.MALE_TITLE_EN
+			title = static.MaleTitleEn
 		} else {
-			title = static.FEMALE_TITLE_EN
+			title = static.FemaleTitleEn
 		}
 		return title
 	default:
 		if gender {
-			title = static.MALE_TITLE_VI
+			title = static.MaleTitleVi
 		} else {
-			title = static.FEMALE_TITLE_VI
+			title = static.FemaleTitleVi
 		}
 		return title
 	}

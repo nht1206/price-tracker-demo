@@ -129,7 +129,7 @@ func (w *priceTracker) StartTracking(ctx context.Context, cancel context.CancelF
 func (w *priceTracker) trackPrice(product model.Product) (*model.TrackingResult, error) {
 	successFlg := false
 	rowAffected, err := w.dao.LockProductToTrackPrice(product.ID)
-	if err != nil || rowAffected != static.MINIMUM_ROW_AFFECTED {
+	if err != nil || rowAffected != static.MinimumRowAffected {
 		return nil, fmt.Errorf("can not lock the product. productId: %v, err: %v, rowAffected: %v", product.ID, err, rowAffected)
 	}
 	defer func() {
@@ -155,13 +155,13 @@ func (w *priceTracker) trackPrice(product model.Product) (*model.TrackingResult,
 
 	if newPrice != oldPrice.Price {
 		rowAffected, err = w.dao.UpdateProductPrice(product.ID, newPrice)
-		if err != nil || rowAffected != static.MINIMUM_ROW_AFFECTED {
+		if err != nil || rowAffected != static.MinimumRowAffected {
 			return nil, fmt.Errorf("can not update price for the product. productId: %v, err: %v, rowAffected: %v", product.ID, err, rowAffected)
 		}
 	}
 
 	rowAffected, err = w.dao.UnlockProduct(product.ID)
-	if err != nil || rowAffected != static.MINIMUM_ROW_AFFECTED {
+	if err != nil || rowAffected != static.MinimumRowAffected {
 		return nil, fmt.Errorf("can not unlock the product. productId: %v, err: %v, rowAffected: %v", product.ID, err, rowAffected)
 	}
 

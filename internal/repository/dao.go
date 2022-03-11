@@ -34,8 +34,8 @@ func NewDAO(db *gorm.DB) (DAO, error) {
 func (d *dao) FindTargetTrackingProduct() ([]model.Product, error) {
 	targetProduct := []model.Product{}
 	if err := d.db.Where("status = ? AND delete_flg = ? AND updated_at <= (NOW() - INTERVAL 1 MINUTE)",
-		static.PRODUCT_STATUS_TRACKED,
-		static.DELETE_FLAG_FALSE).Find(&targetProduct).Error; err != nil {
+		static.ProductStatusTracked,
+		static.DeleteFlagFalse).Find(&targetProduct).Error; err != nil {
 		return nil, err
 	}
 	return targetProduct, nil
@@ -45,7 +45,7 @@ func (d *dao) GetProductPrice(productId uint64) (*model.Price, error) {
 	price := model.Price{}
 	if err := d.db.Where("product_id = ? AND delete_flg = ?",
 		productId,
-		static.DELETE_FLAG_FALSE).Order("updated_at DESC").First(&price).Error; err != nil {
+		static.DeleteFlagFalse).Order("updated_at DESC").First(&price).Error; err != nil {
 		return nil, err
 	}
 
@@ -66,20 +66,20 @@ func (d *dao) GetAllUserFollowed(productId uint64) ([]model.User, error) {
 }
 
 func (d *dao) LockProductToTrackPrice(productId uint64) (int64, error) {
-	return d.updateProductStatus(productId, static.PRODUCT_STATUS_TRACKED, static.PRODUCT_STATUS_ON_TRACKING)
+	return d.updateProductStatus(productId, static.ProductStatusTracked, static.ProductStatusOnTracking)
 }
 
 func (d *dao) UnlockProduct(productId uint64) (int64, error) {
-	return d.updateProductStatus(productId, static.PRODUCT_STATUS_ON_TRACKING, static.PRODUCT_STATUS_TRACKED)
+	return d.updateProductStatus(productId, static.ProductStatusOnTracking, static.ProductStatusTracked)
 }
 
 func (d *dao) UpdateProductStatusToFailed(productId uint64) (int64, error) {
-	return d.updateProductStatus(productId, static.PRODUCT_STATUS_ON_TRACKING, static.PRODUCT_STATUS_TRACKING_FAILED)
+	return d.updateProductStatus(productId, static.ProductStatusOnTracking, static.ProductStatusTrackingFailed)
 }
 
 func (d *dao) updateProductStatus(productId uint64, whereStatus, toStatus int) (int64, error) {
 	result := d.db.Table("t_product").Where("id = ? AND status = ? AND delete_flg = ?",
-		productId, whereStatus, static.DELETE_FLAG_FALSE).
+		productId, whereStatus, static.DeleteFlagFalse).
 		Update("status", toStatus)
 	return result.RowsAffected, result.Error
 }
@@ -98,9 +98,9 @@ func (d *dao) getAllUserFollowed(productId uint64) ([]model.User, error) {
 	`
 
 	if err := d.db.Raw(findSQL,
-		static.DELETE_FLAG_FALSE,
+		static.DeleteFlagFalse,
 		productId,
-		static.DELETE_FLAG_FALSE).Scan(&users).Error; err != nil {
+		static.DeleteFlagFalse).Scan(&users).Error; err != nil {
 		return nil, err
 	}
 

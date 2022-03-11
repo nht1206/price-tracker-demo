@@ -22,7 +22,7 @@ func StartApp(ctx context.Context, sysCtx *system.Context) {
 		return
 	}
 
-	if len(targetTrackingProducts) == static.NO_TARGET {
+	if len(targetTrackingProducts) == static.NoTarget {
 		logger.Info("No target tracking products.")
 	} else {
 		ctx, cancel := context.WithCancel(ctx)

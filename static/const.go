@@ -1,28 +1,28 @@
 package static
 
 const (
-	APPLICATION_STATUS_SUCCESS = iota
-	APPLICATION_STATUS_LOGGER_INIT_ERROR
-	APPLICATION_STATUS_CONTEXT_INIT_ERROR
+	ApplicationStatusSuccess = iota
+	ApplicationStatusLoggerInitError
+	ApplicationStatusContextInitError
 )
 
 const (
-	PRODUCT_STATUS_DRAFT = iota + 1
-	PRODUCT_STATUS_WAITING
-	PRODUCT_STATUS_TRACKED
-	PRODUCT_STATUS_ON_TRACKING
-	PRODUCT_STATUS_ON_STOP
-	PRODUCT_STATUS_TRACKING_FAILED = 9
+	ProductStatusDraft = iota + 1
+	ProductStatusWaiting
+	ProductStatusTracked
+	ProductStatusOnTracking
+	ProductStatusOnStop
+	ProductStatusTrackingFailed = 9
 )
 
 const (
-	DELETE_FLAG_FALSE = 0
-	DELETE_FLAG_TRUE  = 1
+	DeleteFlagFalse = 0
+	DeleteFlagTrue  = 1
 )
 
 const (
-	NO_TARGET            = 0
-	MINIMUM_ROW_AFFECTED = 1
+	NoTarget           = 0
+	MinimumRowAffected = 1
 )
 
 const (
@@ -31,12 +31,12 @@ const (
 )
 
 const (
-	MALE_TITLE_EN       = "Mr/Mrs"
-	FEMALE_TITLE_EN     = "Ms/Mrs"
-	MALE_TITLE_VI       = "Ông"
-	FEMALE_TITLE_VI     = "Bà"
-	MAIL_HEADER         = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	SUBJECT_PLACEHOLDER = "Subject: %s \n%s\n\n"
-	SUBJECT_EN          = "PriceTracker notification"
-	SUBJECT_VI          = "PriceTracker thông báo"
+	MaleTitleEn        = "Mr/Mrs"
+	FemaleTitleEn      = "Ms/Mrs"
+	MaleTitleVi        = "Ông"
+	FemaleTitleVi      = "Bà"
+	MailHeader         = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	SubjectPlaceholder = "Subject: %s \n%s\n\n"
+	SubjectEn          = "PriceTracker notification"
+	SubjectVi          = "PriceTracker thông báo"
 )
