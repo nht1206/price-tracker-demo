@@ -1,5 +1,16 @@
 version: 2.1
 
+install_docker: &install_docker
+  - run:
+    name: Install docker
+    environment:
+      DOCKER_VERSION: 20.10.7
+    command: |
+      curl -so docker-${DOCKER_VERSION}.tgz "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz"
+      tar -xvzf docker-${DOCKER_VERSION}.tgz
+      chmod +x docker/*
+      ln docker/* /usr/local/bin/
+
 
 jobs:
   test:
@@ -40,15 +51,7 @@ jobs:
           command: |
             apk update
             apk add curl
-      - run:
-          environment:
-            DOCKER_VERSION: 20.10.7
-          name: Install docker
-          command: |
-            curl -so docker-${DOCKER_VERSION}.tgz "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz"
-            tar -xvzf docker-${DOCKER_VERSION}.tgz
-            chmod +x docker/*
-            ln docker/* /usr/local/bin/
+      - *install_docker
       - run:
           name: Setup auth config for docker
           command: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
